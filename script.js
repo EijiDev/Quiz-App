@@ -1,102 +1,100 @@
-const quizQuestion = [
-    {
-        question: "What is the capital of France?",
-        choices: ["Berlin","Madrid", "Paris", "Rome"],
-        answer: "Paris"
-    },
-    {
-        question: "What is 5 + 3",
-        choices: ["5","8", "12", "15"],
-        answer: "8"
-    },
-    {
-        question: "What is the largest ocean in the world?",
-        choices: ["West Ph Sea","Indian Ocean", "Atlantic Ocean", "Pacific Ocean"],
-        answer: "Pacific Ocean"
-    },
-    {
-        question: "Where is stanza located?",
-        choices: ["Lingayen","Indonesia", "La Union", "Palawan"],
-        answer: "Lingayen"
-    },
-    {
-        question: "Saan nakatira is Seth?",
-        choices: ["Bayambang","Talibaew", "Bued", "Sa bundok"],
-        answer: "Bued"
-    }
-];
-
-const container = document.getElementById("quiz-container");
 const questionText = document.getElementById("question");
-const choicesText = document.querySelector(".choices");
-const nextBtn = document.querySelector(".next-btn");
+const choicesText = document.getElementById("choices");
 const resultText = document.querySelector("#result");
 const scoreText = document.querySelector("#score");
 const restartBtn = document.querySelector(".restart-btn");
 
+let quizQuestion = [];
 let currentQuestionPage = 0;
 let score = 0;
 
-function loadQuestion () {
-    const currentQuestion = quizQuestion[currentQuestionPage];
-    questionText.textContent= currentQuestion.question;
-    choicesText.innerHTML= "";
+async function fetchQuestion() {
+    try {
+        const response = await fetch("question.txt");
+        if (!response.ok) throw new Error(`Failed to load questions`);
+        const data = await response.text();
+        convertQuestions(data);
+        loadQuestion(); 
+    } catch (error) {
+        console.error("Error fetching questions:", error);
+        questionText.textContent = "❌ Failed to load questions. Please try again later.";
+    }
+}
 
-    currentQuestion.choices.forEach(choices =>{
-        const button = document.createElement('button');
+function convertQuestions(data) {
+    const lines = data.trim().split("\n");
+    lines.forEach(line => {
+        const parts = line.split(",").map(part => part.trim());
+        if (parts.length < 3) return; 
+
+        const question = parts[0];
+        const choices = parts.slice(1, parts.length - 1);
+        const answer = parts[parts.length - 1];
+
+        quizQuestion.push({ question, choices, answer });
+    });
+}
+
+function loadQuestion() {
+    if (currentQuestionPage >= quizQuestion.length) {
+        showResult();
+        return;
+    }
+
+    const currentQuestion = quizQuestion[currentQuestionPage];
+    questionText.textContent = currentQuestion.question;
+    choicesText.innerHTML = "";
+
+    currentQuestion.choices.forEach(choice => {
+        const button = document.createElement("button");
         button.classList.add("choices-btn");
-        button.textContent = choices;
-        button.onclick = () => checkAnswer(choices);
+        button.textContent = choice;
+        button.onclick = () => checkAnswer(choice);
         choicesText.appendChild(button);
     });
-
 }
 
 function checkAnswer(selectedChoice) {
     const correctAnswer = quizQuestion[currentQuestionPage].answer;
     const showCorrect = document.getElementById("correctAnswer");
-    const showScore = document.getElementById("Score").textContent= `Score: ${score} / ${currentQuestionPage}`;
+    const showScore = document.getElementById("Score");
 
-    if(selectedChoice === correctAnswer) {
-        
+    if (selectedChoice === correctAnswer) {
+        showCorrect.textContent = "✅ Correct!";
         score++;
-    } 
-    setTimeout(() => {
-        showCorrect.textContent =`Correct answer is: ${correctAnswer}`;
-        showScore.textContent = `Score: ${score} / ${currentQuestionPage}`;
-
-        container.appendChild(showCorrect);
-        container.appendChild(showScore);
-    }, 2000)
-
-    currentQuestionPage++;
-
-    if (currentQuestionPage < quizQuestion.length){
-        setTimeout(() => {
-            loadQuestion();
-        }, 2000);
     } else {
-        showResult();
+        showCorrect.textContent = `❌ Wrong! Correct answer is: ${correctAnswer}`;
     }
+
+    setTimeout(() => {
+        showScore.textContent = `Score: ${score} / ${currentQuestionPage + 1}`;
+    }, 2000);
+
+    setTimeout(() => {
+        currentQuestionPage++;
+        loadQuestion();
+        showCorrect.textContent = "";
+    }, 2000);
 }
 
-function showResult(){
+function showResult() {
     document.getElementById("quiz").classList.add("hidden");
     resultText.classList.remove("hidden");
+
     if (score >= 3) {
-        scoreText.textContent = `Aratan nan review ka ${score} / ${quizQuestion.length}!`;
+        scoreText.innerHTML = `🎉 Good job! Your score is ${score} / ${quizQuestion.length}.`;
     } else {
-        scoreText.textContent = `Man aral kan maong ${score} / ${quizQuestion.length}!`;
+        scoreText.innerHTML = `💡 Keep practicing! Your score is ${score} / ${quizQuestion.length}.`;
     }
 }
 
-restartBtn.addEventListener("click", function () {
+restartBtn.addEventListener("click", () => {
     currentQuestionPage = 0;
-    score = 0;
+    score = 0; 
+    showScore.textContent = "";
     resultText.classList.add("hidden");
     document.getElementById("quiz").classList.remove("hidden");
-    loadQuestion(); 
+    loadQuestion();
 });
 
-nextBtn.style.display = "none";
-loadQuestion();
+fetchQuestion();
