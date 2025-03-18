@@ -1,0 +1,5 @@
+What is the capital of France?,Berlin,Madrid,Paris,Rome,Paris
+What is 5 + 3?,5,8,12,15,8
+What is the largest ocean in the world?,West Ph Sea,Indian Ocean,Atlantic Ocean,Pacific Ocean,Pacific Ocean
+Where is stanza located?,Lingayen,Indonesia,La Union,Palawan,Lingayen
+Saan nakatira si Seth?,Bayambang,Talibaew,Bued,Sa bundok,Bued
