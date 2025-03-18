@@ -1,19 +1,17 @@
-
 body {
     font-family: Arial, sans-serif;
     text-align: center;
-    background-color: #30395f;
-
+    background-color: #023336;
+    color: #c6d4c3;
 }
 
 .quiz-container {
-    width: 400px;
+    width: 45%;
     margin: 50px auto;
-    background: white;
     padding: 20px;
     border-radius: 10px;
-    box-shadow: 0px 0px 10px rgba(0,0,0,0,0.1);
-    margin-top: 15%;
+    box-shadow: rgba(0, 0, 0, 0.35) 0px 5px 15px;
+    margin-top: 6%;
 }
 
 h1{
@@ -34,18 +32,19 @@ button {
 }
 
 .choices button{
-    background-color: rgb(106, 71, 153);
+    background-color: #4DA674;
     color: white;
     padding: 10px;
     margin: 5px;
     border: none;
     cursor: pointer;
     transition: 0.3s;
-    height: 45px;
+    height: 48px;
 }
 
 button:hover {
-    background-color: rgb(67, 47, 94);
+    background-color: #3e855d;
+    transform: scale(1.06)
 }
 
 .hidden {
@@ -58,5 +57,10 @@ button{
 
 .restart-btn {
     color: white;
-    background-color: rgb(106, 71, 153);
+    background-color: #3e855d;
+}
+
+#Score {
+    text-align: center;
+    font-size: large;
 }
